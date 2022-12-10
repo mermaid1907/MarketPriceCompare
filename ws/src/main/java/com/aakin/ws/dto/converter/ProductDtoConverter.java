@@ -1,6 +1,5 @@
 package com.aakin.ws.dto.converter;
 
-import com.aakin.ws.dto.ProductDto;
 import com.aakin.ws.model.Product;
 import org.springframework.stereotype.Component;
 

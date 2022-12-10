@@ -1,6 +1,7 @@
 package com.aakin.ws.service;
 
-import com.aakin.ws.dto.ProductDto;
+
+import com.aakin.ws.dto.converter.ProductDto;
 import com.aakin.ws.dto.converter.ProductDtoConverter;
 import com.aakin.ws.model.Product;
 import com.aakin.ws.repository.ProductRepository;
@@ -15,13 +16,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService {
 
-    private final ProductRepository productRepository;
     private final ProductDtoConverter productDtoConverter;
+    private final ProductRepository productRepository;
+
     public String createProduct(MultipartFile file) throws IOException {
         List<Product> productList = new ArrayList<>();
         InputStream inputStream = file.getInputStream();
@@ -48,5 +51,11 @@ public class ProductService {
         }
         return playerDtoList;
     }
+
+    public List<ProductDto> getProductNameContaining(String index) {
+        List<Product> products = productRepository.findByProductNameContaining(index);
+        return products.stream().map(productDtoConverter::convert).collect(Collectors.toList());
+    }
+
 
 }
