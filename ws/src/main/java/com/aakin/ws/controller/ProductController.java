@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "**", allowedHeaders = "**")
 public class ProductController {
     private final ProductService productService;
 

@@ -19,13 +19,12 @@ public class Product {
     private String id;
 
     @Column(name = "product_name")
-
     private String productName;
 
     @Column(name = "price")
     private Double price;
 
-    @Column(name = "market_id")
-    private Double marketId;
+    @Column(name = "market_name")
+    private String marketName;
 
 }

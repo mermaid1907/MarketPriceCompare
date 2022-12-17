@@ -11,7 +11,7 @@ public class ProductDtoConverter {
         productDto.setProductName(product.getProductName());
         productDto.setId(product.getId());
         productDto.setPrice(product.getPrice());
-        productDto.setMarketId(product.getMarketId());
+        productDto.setMarketName(product.getMarketName());
         return productDto;
     }
 

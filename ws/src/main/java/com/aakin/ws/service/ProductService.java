@@ -34,9 +34,9 @@ public class ProductService {
         List<Record> parseAllRecords = parser.parseAllRecords(inputStream);
         parseAllRecords.forEach(record -> {
             Product product = new Product();
-            product.setProductName(record.getString("Product Name"));
+            product.setProductName(record.getString("Product_Name"));
             product.setPrice(Double.parseDouble(record.getString("Price")));
-            product.setMarketId(Double.parseDouble(record.getString("market_id")));
+            product.setMarketName(record.getString("Market_Name"));
             productList.add(product);
         });
         productRepository.saveAll(productList);

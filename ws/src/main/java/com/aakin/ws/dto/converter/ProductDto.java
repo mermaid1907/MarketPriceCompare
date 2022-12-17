@@ -8,5 +8,5 @@ public class ProductDto {
     private String id;
     private String productName;
     private Double price;
-    private Double marketId;
+    private String marketName;
 }
