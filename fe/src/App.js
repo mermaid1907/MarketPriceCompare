@@ -51,7 +51,7 @@ function App() {
               return search.toLowerCase() === '' ? item : item.productName.toLowerCase().includes(search);
             }).map((item) => (
               <tr>
-                <td>{item.productName}</td>
+                <td className='hoverClass'>{item.productName}</td>
                 <td>{item.price}</td>
                 <td>{item.marketName}</td>
               </tr>
