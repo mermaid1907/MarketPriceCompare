@@ -13,11 +13,12 @@ for product, price in migros_data.values:
             if int(price)<int(price2):
                 cheap.append(["Migros",product.replace("_", " "),price])
             elif int(price2)<int(price):
-                cheap.append(["Carrefour",product.replace("_", " "),price])
+                cheap.append(["Carrefour",product.replace("_", " "),price2])
             elif int(price) == int(price2):
                 cheap.append(["Migros",product.replace("_", " "),price])
             else:
                 pass
+
                   
 print(len(cheap))  
 my_df = pd.DataFrame(cheap, columns=['Market_Name','Product_Name','Price'])
