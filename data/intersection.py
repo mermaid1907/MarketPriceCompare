@@ -18,8 +18,7 @@ for product, price in migros_data.values:
                 cheap.append(["Migros",product.replace("_", " "),price])
             else:
                 pass
-
                   
 print(len(cheap))  
 my_df = pd.DataFrame(cheap, columns=['Market_Name','Product_Name','Price'])
-my_df.to_csv('cheapest_1.csv', index=False)         
+my_df.to_csv('cheapest.csv', index=False)         
