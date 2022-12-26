@@ -8,7 +8,6 @@ from tqdm import *
 import pandas as pd
 import requests
 import time
-import csv
 
 
 class CarrefourScraper:
@@ -45,7 +44,7 @@ class CarrefourScraper:
                     
                     self.products.append([stripped_name, stripped_price])
       
-                    print(self.products)
+                    #print(self.products)
                     
                 except Exception as e:
                     print(e)                
@@ -56,88 +55,70 @@ class CarrefourScraper:
         data.to_csv('.\\carrefour_data.csv', encoding='utf-8', index=False)
 
     
-class MigrosScraper:
-    
-    def __init__(self, market_name):
-        PATH = "C:\Program Files (x86)\chromedriver.exe"
-        self.browser = webdriver.Chrome(PATH)
-        
-        #in addition to prevent the code from "1048 Failed to read descriptor from node connection"
-        options = webdriver.ChromeOptions()
-        options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        
-        self.browser = webdriver.Chrome(options=options)
-        self.market_name = market_name
-        
-        self.links = list()
-        self.products= list()
-        
-    def get_links(self):
-        self.browser.get("https://www.migros.com.tr")
-        time.sleep(1)
-        #ok = WebDriverWait(self.browser, 4).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'button.mdc-button'))).click()
-        time.sleep(1)
-        
+
+class Migros:
+    def __init__(self):
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_experimental_option("detach", True)
+        self.browser = webdriver.Chrome(chrome_options=chrome_options)
+        self.browser.maximize_window()
+        self.browser.implicitly_wait(2)
         self.links = ["https://www.migros.com.tr/meyve-sebze-c-2",
-                "https://www.migros.com.tr/et-tavuk-balik-c-3",
-                "https://www.migros.com.tr/sut-kahvaltilik-c-4",
-                "https://www.migros.com.tr/temel-gida-c-5",
-                "https://www.migros.com.tr/meze-hazir-yemek-donuk-c-7d",
-                "https://www.migros.com.tr/firin-pastane-c-7e",
-                "https://www.migros.com.tr/dondurma-c-41b",
-                "https://www.migros.com.tr/atistirmalik-c-113fb",
-                "https://www.migros.com.tr/icecek-c-6",
-                "https://www.migros.com.tr/deterjan-temizlik-c-7",
-                "https://www.migros.com.tr/kisisel-bakim-kozmetik-c-8",
-                "https://www.migros.com.tr/bebek-c-9",
-                "https://www.migros.com.tr/ev-yasam-c-a"]
-      
+                      "https://www.migros.com.tr/et-tavuk-balik-c-3",
+                      "https://www.migros.com.tr/sut-kahvaltilik-c-4",
+                      "https://www.migros.com.tr/temel-gida-c-5",
+                      "https://www.migros.com.tr/meze-hazir-yemek-donuk-c-7d",
+                      "https://www.migros.com.tr/firin-pastane-c-7e",
+                       "https://www.migros.com.tr/dondurma-c-41b",
+                       "https://www.migros.com.tr/atistirmalik-c-113fb",
+                       "https://www.migros.com.tr/icecek-c-6",
+                       "https://www.migros.com.tr/deterjan-temizlik-c-7",
+                      "https://www.migros.com.tr/kisisel-bakim-kozmetik-c-8",
+                       "https://www.migros.com.tr/bebek-c-9",
+                       "https://www.migros.com.tr/ev-yasam-c-a",
+                       "https://www.migros.com.tr/kitap-kirtasiye-oyuncak-c-118ec",
+                       "https://www.migros.com.tr/cicek-c-502",
+                       "https://www.migros.com.tr/pet-shop-c-a0",
+                       "https://www.migros.com.tr/elektronik-c-a6"]
         
-    def get_names_and_prices(self):
-   
-        name_list = list()
-        price_list = list()
-   
+    def getNamesAndPrice(self):
+
+        namesList = []
+        pricesList = []
         for link in tqdm(self.links):
+            self.browser.get(link)
+            self.browser.implicitly_wait(3)
+            while True:
+                cards = self.browser.find_elements(By.CLASS_NAME, 'mat-mdc-card')
+                self.browser.implicitly_wait(3)
+
+                for card in cards:
+                    try:
+                        names = card.find_element(By.CLASS_NAME, 'product-name')
+                        prices = card.find_element(By.CLASS_NAME, 'amount')
+                        pricesList.append(float(prices.text.strip("TL").replace(" ", "").strip(".").replace(",",".")))
+                        namesList.append(names.text)
+                    except:
+                        print("No Product")
+
+                self.browser.implicitly_wait(1)
+                self.browser.execute_script("window.scrollBy(0,800)")
+                self.browser.implicitly_wait(2)
             
-            page = 1
-            there_is_next_page = True
-
-            while there_is_next_page:
-                r = self.browser.get(link+f'/?sayfa={page}')
-                time.sleep(2)
+                pageWay = self.browser.find_element(By.ID, 'pagination-button-next')
                 
-            
-                container = self.browser.find_element(By.XPATH, '/html/body/sm-root/div/main/sm-product/article/sm-list/div/div[4]/div[2]/div[4]')
-
-                try:
-                    names = container.find_elements(By.CSS_SELECTOR, 'a.product-name')
-                    prices = container.find_elements(By.CSS_SELECTOR, 'span.amount')
-
-                    for name in names:
-                        name_list.append(name.text.replace(" ", "_"))
-                        
-                    for price in prices:
-                        price_list.append(float(price.text.strip("TL").replace(" ", "").replace(",",".")))
-                    
-                    self.products = zip(name_list,price_list)
-                    
-                except Exception as e:
-                    print(e)
-
-                page += 1
-                           
-                if self.browser.find_element(By.CSS_SELECTOR, 'button#pagination-button-next').get_attribute("disabled") == "true":
-                    page = 1
-                    there_is_next_page = False
+                if pageWay.is_enabled() == False:
+                    break
                 
-        self.browser.quit() 
-        
-        
-    def save_data(self):
-        #saving data to excel
-        data = pd.DataFrame(self.products, columns = ["Product Name", "Price"])
-        data.to_csv('.\\migros_data.csv', encoding='utf-8', index=False)
+                else:
+                    pageWay.click()
+
+
+        products = zip(namesList,pricesList)            
+        data = pd.DataFrame(products,columns=["Product Name","Price"])
+        data.to_csv(".\\migros_data.csv", encoding="utf-8",index=False)
+
+        self.browser.quit()
         
     
 if __name__ == '__main__':
@@ -147,11 +128,5 @@ if __name__ == '__main__':
     carrefour.get_names_and_prices()
     carrefour.save_data()
     '''
-    migros = MigrosScraper("Migros")
-    migros.get_links()
-    migros.get_names_and_prices()
-    migros.save_data()
-    
-
-    
- 
+    migros = Migros()
+    migros.getNamesAndPrice()
